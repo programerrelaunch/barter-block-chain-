@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "installCommand": "npm install",
+  "installCommand": "npm install --include=dev",
   "buildCommand": "npm run build -w @barterchain/shared && npm run build -w @barterchain/web",
   "outputDirectory": "apps/web/dist",
   "framework": null,

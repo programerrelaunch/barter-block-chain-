@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Navigate, Route, Routes, useLocation, Link, useNavigate } from "react-router-dom";
 import { getSession, setSession } from "./lib/api";
 import LoginPage from "./pages/LoginPage";
@@ -7,7 +8,7 @@ import ManualTradePage from "./pages/ManualTradePage";
 import BrokerPage from "./pages/BrokerPage";
 import AdminPage from "./pages/AdminPage";
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({ children }: { children: ReactNode }) {
   const session = getSession();
   const location = useLocation();
   const navigate = useNavigate();
