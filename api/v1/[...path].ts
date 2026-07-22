@@ -5,7 +5,7 @@ import {
   settleTrade,
   verifyPassword,
   computeFeePreview,
-} from "./_lib/store";
+} from "../_lib/store";
 
 const JWT_SECRET = process.env.JWT_SECRET || "barterchain-dev-secret-change-me";
 

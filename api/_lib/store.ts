@@ -1,18 +1,38 @@
-import {
-  CROSS_NETWORK_FEE_BPS,
-  IN_NETWORK_FEE_BPS,
-  OPERATOR_CROSS_FEE_BPS,
-  PLATFORM_FEE_BPS,
-  computeFeePreview,
-} from "../../packages/shared/dist/index.js";
+export const IN_NETWORK_FEE_BPS = 1000;
+export const CROSS_NETWORK_FEE_BPS = 1500;
+export const PLATFORM_FEE_BPS = 500;
+export const OPERATOR_CROSS_FEE_BPS = 1000;
 
-export {
-  CROSS_NETWORK_FEE_BPS,
-  IN_NETWORK_FEE_BPS,
-  OPERATOR_CROSS_FEE_BPS,
-  PLATFORM_FEE_BPS,
-  computeFeePreview,
-};
+function centsToDollars(cents: number): string {
+  return (cents / 100).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+}
+
+export function computeFeePreview(input: {
+  grossCents: number;
+  isCrossNetwork: boolean;
+  inNetworkFeeBps?: number;
+}) {
+  const inNetworkFeeBps = input.inNetworkFeeBps ?? IN_NETWORK_FEE_BPS;
+  const feeBps = input.isCrossNetwork ? CROSS_NETWORK_FEE_BPS : inNetworkFeeBps;
+  const feeCents = Math.round((input.grossCents * feeBps) / 10000);
+  const sellerNetCents = input.grossCents - feeCents;
+  const message = input.isCrossNetwork
+    ? `This is a cross-network trade. Seller fee is ${(feeBps / 100).toFixed(0)}% (${centsToDollars(feeCents)}) instead of the in-network ${(inNetworkFeeBps / 100).toFixed(0)}%.`
+    : `In-network seller fee: ${(feeBps / 100).toFixed(0)}% (${centsToDollars(feeCents)}).`;
+  return {
+    grossCents: input.grossCents,
+    feeBps,
+    feeCents,
+    sellerNetCents,
+    isCrossNetwork: input.isCrossNetwork,
+    inNetworkFeeBps,
+    crossNetworkFeeBps: CROSS_NETWORK_FEE_BPS,
+    message,
+  };
+}
 
 export type User = {
   id: string;
