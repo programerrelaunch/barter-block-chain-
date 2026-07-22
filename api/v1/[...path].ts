@@ -82,7 +82,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === "OPTIONS") return res.status(200).end();
 
   const store = getStore();
-  const parts = ([] as string[]).concat((req.query.path as string[]) || []).filter(Boolean);
+  const rawPath = req.query.path;
+  let parts = Array.isArray(rawPath) ? rawPath : rawPath ? [String(rawPath)] : [];
+  if (parts.length === 0 && req.url) {
+    const pathname = req.url.split("?")[0];
+    const stripped = pathname.replace(/^\/api\/v1\/?/, "").replace(/^\/v1\/?/, "");
+    parts = stripped ? stripped.split("/").filter(Boolean) : [];
+  }
   const path = parts.join("/");
   const method = req.method || "GET";
   const body = readBody(req);
