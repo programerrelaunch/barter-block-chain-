@@ -5,8 +5,8 @@ import { api, getSession, setSession } from "../lib/api";
 export default function LoginPage() {
   const navigate = useNavigate();
   const existing = getSession();
-  const [email, setEmail] = useState("operator@baybarter.local");
-  const [password, setPassword] = useState("operator123");
+  const [email, setEmail] = useState("admin@barterchain.local");
+  const [password, setPassword] = useState("admin123");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -17,7 +17,7 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      const data = await api<{ token: string; user: any }>("/v1/auth/login", {
+      const data = await api<{ token: string; user: any }>("/api/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });

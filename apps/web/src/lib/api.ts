@@ -33,9 +33,13 @@ export async function api<T>(
   const token = options.token ?? getSession()?.token;
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  const url = `${API_BASE}${path}`;
+  const res = await fetch(url, { ...options, headers });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error ?? `Request failed (${res.status})`);
+  if (!res.ok) {
+    const detail = data.error ?? `Request failed (${res.status})`;
+    throw new Error(typeof detail === "string" ? detail : `Request failed (${res.status})`);
+  }
   return data as T;
 }
 

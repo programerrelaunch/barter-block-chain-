@@ -8,6 +8,14 @@ export default defineConfig({
     proxy: {
       "/v1": "http://localhost:4000",
       "/health": "http://localhost:4000",
+      "/api/login": {
+        target: "http://localhost:4000",
+        rewrite: () => "/v1/auth/login",
+      },
+      "/api/health": {
+        target: "http://localhost:4000",
+        rewrite: () => "/health",
+      },
     },
   },
 });
