@@ -5,7 +5,7 @@ import {
   settleTrade,
   verifyPassword,
   computeFeePreview,
-} from "../_lib/store";
+} from "./_lib/store";
 
 const JWT_SECRET = process.env.JWT_SECRET || "barterchain-dev-secret-change-me";
 
@@ -45,7 +45,9 @@ function verifyJwt(token: string): any | null {
       .replace(/\+/g, "-")
       .replace(/\//g, "_");
     if (sig !== expected) return null;
-    const payload = JSON.parse(Buffer.from(body.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString());
+    const payload = JSON.parse(
+      Buffer.from(body.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString()
+    );
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
     return payload;
   } catch {
@@ -77,24 +79,34 @@ function authUser(req: VercelRequest) {
   return verifyJwt(header.slice(7));
 }
 
+function resolvePath(req: VercelRequest): string {
+  const rawPath = req.query.path;
+  let parts = Array.isArray(rawPath) ? rawPath : rawPath ? [String(rawPath)] : [];
+  if (parts.length === 0 && typeof req.query.p === "string") {
+    parts = String(req.query.p).split("/").filter(Boolean);
+  }
+  if (parts.length === 0 && req.url) {
+    const pathname = req.url.split("?")[0];
+    const stripped = pathname
+      .replace(/^\/api\/v1\/?/, "")
+      .replace(/^\/api\/?/, "")
+      .replace(/^\/v1\/?/, "");
+    parts = stripped ? stripped.split("/").filter(Boolean) : [];
+  }
+  return parts.join("/");
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   cors(res);
   if (req.method === "OPTIONS") return res.status(200).end();
 
   const store = getStore();
-  const rawPath = req.query.path;
-  let parts = Array.isArray(rawPath) ? rawPath : rawPath ? [String(rawPath)] : [];
-  if (parts.length === 0 && req.url) {
-    const pathname = req.url.split("?")[0];
-    const stripped = pathname.replace(/^\/api\/v1\/?/, "").replace(/^\/v1\/?/, "");
-    parts = stripped ? stripped.split("/").filter(Boolean) : [];
-  }
-  const path = parts.join("/");
+  const path = resolvePath(req);
   const method = req.method || "GET";
   const body = readBody(req);
 
   try {
-    if (method === "POST" && path === "auth/login") {
+    if (method === "POST" && (path === "auth/login" || path === "login")) {
       const user = store.users.find((u) => u.email === String(body.email || "").toLowerCase());
       if (!user || !verifyPassword(user.password_hash, body.password || "")) {
         return res.status(401).json({ error: "Invalid email or password" });
@@ -112,7 +124,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ token, user: mapUser(user) });
     }
 
-    if (method === "GET" && path === "auth/me") {
+    if (method === "GET" && (path === "auth/me" || path === "me")) {
       const auth = authUser(req);
       if (!auth) return res.status(401).json({ error: "Unauthorized" });
       const user = store.users.find((u) => u.id === auth.id);
@@ -355,7 +367,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!auth || !["operator", "admin", "broker"].includes(auth.role)) {
         return res.status(403).json({ error: "Forbidden" });
       }
-      const exchangeId = auth.role === "admin" ? (req.query.exchangeId as string) || auth.exchangeId : auth.exchangeId;
+      const exchangeId =
+        auth.role === "admin" ? (req.query.exchangeId as string) || auth.exchangeId : auth.exchangeId;
       const members = store.users.filter((u) => u.exchange_id === exchangeId && u.role === "member");
       const today = new Date().toISOString().slice(0, 10);
       const month = new Date().toISOString().slice(0, 7);
@@ -396,7 +409,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!auth || !["operator", "admin", "broker"].includes(auth.role)) {
         return res.status(403).json({ error: "Forbidden" });
       }
-      const exchangeId = auth.role === "admin" ? (req.query.exchangeId as string) || auth.exchangeId : auth.exchangeId;
+      const exchangeId =
+        auth.role === "admin" ? (req.query.exchangeId as string) || auth.exchangeId : auth.exchangeId;
       const members = store.users.filter((u) => u.exchange_id === exchangeId && u.role === "member");
       return res.status(200).json({
         members: members.map((u) => {

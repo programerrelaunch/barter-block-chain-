@@ -5,8 +5,9 @@
   "outputDirectory": "apps/web/dist",
   "framework": null,
   "rewrites": [
-    { "source": "/v1/:path*", "destination": "/api/v1/:path*" },
     { "source": "/health", "destination": "/api/health" },
+    { "source": "/v1/auth/login", "destination": "/api/login" },
+    { "source": "/v1/:path*", "destination": "/api/:path*" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
