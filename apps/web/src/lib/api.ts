@@ -14,7 +14,13 @@ export type Session = {
 
 export function getSession(): Session | null {
   const raw = localStorage.getItem("bc_session");
-  return raw ? JSON.parse(raw) : null;
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as Session;
+  } catch {
+    localStorage.removeItem("bc_session");
+    return null;
+  }
 }
 
 export function setSession(session: Session | null) {
@@ -35,7 +41,22 @@ export async function api<T>(
 
   const url = `${API_BASE}${path}`;
   const res = await fetch(url, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
+  const contentType = res.headers.get("content-type") ?? "";
+  const raw = await res.text();
+  let data: Record<string, unknown> = {};
+  if (raw) {
+    if (!contentType.includes("application/json") && raw.trimStart().startsWith("<")) {
+      throw new Error(`API returned HTML instead of JSON (${res.status})`);
+    }
+    try {
+      data = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      if (!res.ok) {
+        throw new Error(`Request failed (${res.status})`);
+      }
+      throw new Error(`API returned invalid JSON (${res.status})`);
+    }
+  }
   if (!res.ok) {
     const detail = data.error ?? `Request failed (${res.status})`;
     throw new Error(typeof detail === "string" ? detail : `Request failed (${res.status})`);

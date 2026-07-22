@@ -57,7 +57,7 @@ export default function DashboardPage() {
 
           <div className="panel">
             <h2>Accounts needing attention</h2>
-            {data.accountsNeedingAttention.length === 0 ? (
+            {(!data.accountsNeedingAttention || data.accountsNeedingAttention.length === 0) ? (
               <p style={{ color: "var(--muted)" }}>Nothing urgent right now.</p>
             ) : (
               <table>
@@ -69,8 +69,8 @@ export default function DashboardPage() {
                     <th>Why</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {data.accountsNeedingAttention.map((a) => (
+            <tbody>
+              {(data.accountsNeedingAttention ?? []).map((a) => (
                     <tr key={a.id}>
                       <td>{a.business_name}</td>
                       <td>{money(a.balance_cents)}</td>

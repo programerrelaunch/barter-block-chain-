@@ -7,12 +7,6 @@
   "rewrites": [
     { "source": "/health", "destination": "/api/health" },
     { "source": "/v1/auth/login", "destination": "/api/login" },
-    { "source": "/v1/auth/me", "destination": "/api?p=auth/me" },
-    { "source": "/v1/operator/:path*", "destination": "/api?p=operator/:path*" },
-    { "source": "/v1/admin/:path*", "destination": "/api?p=admin/:path*" },
-    { "source": "/v1/trades/:path*", "destination": "/api?p=trades/:path*" },
-    { "source": "/v1/members/:path*", "destination": "/api?p=members/:path*" },
-    { "source": "/v1/listings/:path*", "destination": "/api?p=listings/:path*" },
     { "source": "/v1/:path*", "destination": "/api?p=:path*" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]

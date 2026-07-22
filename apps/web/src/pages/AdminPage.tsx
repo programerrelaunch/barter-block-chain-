@@ -124,7 +124,7 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {exchanges.map((ex) => (
+            {(exchanges ?? []).map((ex) => (
               <tr key={ex.id}>
                 <td>{ex.name}</td>
                 <td>{ex.slug}</td>
@@ -162,7 +162,7 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {audit.slice(0, 20).map((e) => (
+            {(audit ?? []).slice(0, 20).map((e) => (
               <tr key={e.id}>
                 <td>{new Date(e.created_at).toLocaleString()}</td>
                 <td>{e.action}</td>
