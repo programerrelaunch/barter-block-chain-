@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "installCommand": "npm install",
+  "buildCommand": "npm run build -w @barterchain/shared && npm run build -w @barterchain/web",
+  "outputDirectory": "apps/web/dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/v1/(.*)", "destination": "/api/v1/$1" },
+    { "source": "/health", "destination": "/api/health" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}

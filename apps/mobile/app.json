@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "BarterChain",
+    "slug": "barterchain",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "barterchain",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "platforms": ["ios", "android", "web"],
+    "plugins": ["expo-router", "expo-secure-store"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

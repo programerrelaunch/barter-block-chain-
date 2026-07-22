@@ -1,0 +1,26 @@
+{
+  "name": "barterchain",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w @barterchain/api",
+    "dev:web": "npm run dev -w @barterchain/web",
+    "dev:mobile": "npm run start -w @barterchain/mobile",
+    "contracts:compile": "npm run compile -w @barterchain/contracts",
+    "contracts:test": "npm run test -w @barterchain/contracts",
+    "contracts:deploy:local": "npm run deploy:local -w @barterchain/contracts",
+    "db:seed": "npm run seed -w @barterchain/api",
+    "build": "npm run build -w @barterchain/shared && npm run build -w @barterchain/web",
+    "vercel-build": "npm run build -w @barterchain/shared && npm run build -w @barterchain/web"
+  },
+  "dependencies": {
+    "@vercel/node": "^5.8.26"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
